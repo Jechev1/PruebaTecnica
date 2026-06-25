@@ -18,10 +18,7 @@ export function useKpis(filters: Filters) {
     if (filters.customerState) params.customer_state = filters.customerState;
 
     fetchKpis(params)
-      .then((res) => {
-        if (!res.ok) throw new Error(`API error ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((json: KpiResult) => setData(json))
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));

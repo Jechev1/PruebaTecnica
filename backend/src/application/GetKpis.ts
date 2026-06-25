@@ -7,9 +7,7 @@ function daysBetween(a: Date, b: Date): number {
 }
 
 export class GetKpis {
-  // KPI aggregation returns a single row regardless of range width,
-  // so we allow up to 2 years — enough to cover the full Olist dataset.
-  private static readonly MAX_RANGE_DAYS = 730;
+  private static readonly MAX_RANGE_DAYS = 1100;
 
   constructor(private readonly kpiRepository: IKpiRepository) {}
 

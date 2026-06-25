@@ -23,10 +23,7 @@ export function useProducts(filters: Filters, metric: ProductMetric, limit: numb
     if (filters.customerState) params.customer_state = filters.customerState;
 
     fetchProducts(params)
-      .then((res) => {
-        if (!res.ok) throw new Error(`API error ${res.status}`);
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((json: TopProduct[]) => setData(json))
       .catch((e: Error) => setError(e.message))
       .finally(() => setLoading(false));

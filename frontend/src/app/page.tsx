@@ -10,7 +10,7 @@ import { useTrend } from '../hooks/useTrend';
 import { useProducts } from '../hooks/useProducts';
 
 const DEFAULT_FILTERS: Filters = {
-  from: '2018-01-01',
+  from: '2016-09-01',
   to: '2018-12-31',
   orderStatus: '',
   customerState: '',

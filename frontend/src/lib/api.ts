@@ -8,16 +8,20 @@ function toQuery(params: Record<string, string | number | undefined>): string {
   return q ? `?${q}` : '';
 }
 
-export async function fetchKpis(params: Record<string, string>): Promise<Response> {
-  return fetch(`${API_URL}/kpis${toQuery(params)}`);
+export async function apiFetch(url: string): Promise<Response> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error ?? `Error ${res.status}`);
+  }
+  return res;
 }
 
-export async function fetchTrend(params: Record<string, string>): Promise<Response> {
-  return fetch(`${API_URL}/trend/revenue${toQuery(params)}`);
-}
+export const fetchKpis = (params: Record<string, string>) =>
+  apiFetch(`${API_URL}/kpis${toQuery(params)}`);
 
-export async function fetchProducts(
-  params: Record<string, string | number>,
-): Promise<Response> {
-  return fetch(`${API_URL}/rankings/products${toQuery(params)}`);
-}
+export const fetchTrend = (params: Record<string, string>) =>
+  apiFetch(`${API_URL}/trend/revenue${toQuery(params)}`);
+
+export const fetchProducts = (params: Record<string, string | number>) =>
+  apiFetch(`${API_URL}/rankings/products${toQuery(params)}`);

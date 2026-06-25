@@ -7,8 +7,8 @@ function daysBetween(a: Date, b: Date): number {
 }
 
 const MAX_DAYS: Record<'day' | 'week', number> = {
-  day: 365,   // 365 daily points is the limit before the chart becomes unreadable
-  week: 730,  // weekly grain can handle 2 years comfortably
+  day: 800,
+  week: 1100,
 };
 
 export class GetRevenueTrend {
