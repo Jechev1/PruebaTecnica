@@ -62,14 +62,9 @@ export function ProductsTable({ data, loading, metric, onMetricChange, currency,
                 <span className="text-xs font-bold text-slate-300 dark:text-slate-600 w-5 shrink-0">{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <div className="min-w-0">
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate block">
-                        {p.categoryNameEnglish ?? p.categoryName ?? '—'}
-                      </span>
-                      <span className="text-xs font-mono text-slate-400 dark:text-slate-500">
-                        {p.productId.slice(0, 8)}…
-                      </span>
-                    </div>
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">
+                      {p.categoryNameEnglish ?? p.categoryName ?? '—'}
+                    </span>
                     <span className="text-sm font-bold text-slate-800 dark:text-slate-200 ml-4 shrink-0">
                       {fmtMoney(val, currency, conversionRate)}
                     </span>
