@@ -1,0 +1,80 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["gold"]
+}
+
+// Gold schema models — tables are created by SQL ETL migrations, not prisma migrate.
+// Prisma is used here for client generation and $queryRaw access.
+
+model FactSales {
+  fact_id                 Int      @id @default(autoincrement())
+  order_id                String
+  order_item_id           Int
+  date_id                 Int?
+  customer_id             String?
+  product_id              String?
+  seller_id               String?
+  item_price              Decimal  @db.Decimal(10, 2)
+  freight_value           Decimal  @db.Decimal(10, 2)
+  payment_value_allocated Decimal  @db.Decimal(10, 2)
+  is_delivered            Boolean  @default(false)
+  is_canceled             Boolean  @default(false)
+  is_on_time              Boolean?
+
+  @@unique([order_id, order_item_id])
+  @@map("fact_sales")
+  @@schema("gold")
+}
+
+model DimDate {
+  date_id      Int      @id
+  full_date    DateTime @db.Date
+  year         Int?
+  quarter      Int?
+  month        Int?
+  week         Int?
+  day_of_week  Int?
+  day_of_month Int?
+  is_weekend   Boolean?
+
+  @@map("dim_date")
+  @@schema("gold")
+}
+
+model DimCustomer {
+  customer_id        String  @id
+  customer_unique_id String?
+  customer_state     String?
+  customer_city      String?
+
+  @@map("dim_customer")
+  @@schema("gold")
+}
+
+model DimProduct {
+  product_id            String  @id
+  category_name         String?
+  category_name_english String?
+
+  @@map("dim_product")
+  @@schema("gold")
+}
+
+model DimOrder {
+  order_id                String    @id
+  order_status            String?
+  purchase_date           DateTime? @db.Date
+  approved_at             DateTime?
+  delivered_carrier_date  DateTime?
+  delivered_customer_date DateTime?
+  estimated_delivery_date DateTime?
+
+  @@map("dim_order")
+  @@schema("gold")
+}
