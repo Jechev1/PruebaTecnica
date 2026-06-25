@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: olist
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - '5432:5432'
     volumes:
@@ -22,7 +22,7 @@ services:
       dockerfile: Dockerfile
     container_name: olist_backend
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/olist
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@db:5432/olist
       PORT: 3001
       DATA_DIR: /app/data
       NODE_ENV: production

@@ -42,7 +42,7 @@ export class PrismaKpiRepository implements IKpiRepository {
         COUNT(fs.order_item_id)                                                                       AS total_items,
         COUNT(DISTINCT CASE WHEN fs.is_canceled THEN fs.order_id END)                                AS canceled_orders,
         COUNT(DISTINCT CASE WHEN fs.is_delivered THEN fs.order_id END)                               AS delivered_orders,
-        COUNT(CASE WHEN fs.is_on_time = true THEN 1 END)                                              AS on_time_count
+        COUNT(DISTINCT CASE WHEN fs.is_on_time = true THEN fs.order_id END)                           AS on_time_count
       FROM gold.fact_sales fs
       JOIN gold.dim_date     dd   ON fs.date_id     = dd.date_id
       JOIN gold.dim_order    dord ON fs.order_id    = dord.order_id

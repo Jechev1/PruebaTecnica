@@ -6,26 +6,36 @@ interface ProductsTableProps {
   loading: boolean;
   metric: ProductMetric;
   onMetricChange: (m: ProductMetric) => void;
+  currency: 'BRL' | 'USD';
+  conversionRate: number;
 }
 
-function fmtBRL(n: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
+function fmtMoney(n: number, currency: 'BRL' | 'USD', rate: number) {
+  if (currency === 'USD') {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n / rate);
+  }
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n);
 }
 
-export function ProductsTable({ data, loading, metric, onMetricChange }: ProductsTableProps) {
+export function ProductsTable({ data, loading, metric, onMetricChange, currency, conversionRate }: ProductsTableProps) {
+  const maxVal = data.length ? Math.max(...data.map((p) => (metric === 'gmv' ? p.gmv : p.revenue))) : 1;
+
   return (
-    <div className="bg-white rounded-xl shadow p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-700">Top Products</h2>
-        <div className="flex gap-2">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+        <div>
+          <h2 className="text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest">Top Products</h2>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">Ranked by selected metric</p>
+        </div>
+        <div className="flex gap-1 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
           {(['gmv', 'revenue'] as ProductMetric[]).map((m) => (
             <button
               key={m}
               onClick={() => onMetricChange(m)}
-              className={`px-3 py-1 rounded text-sm font-medium transition ${
+              className={`px-3 py-1 rounded-md text-xs font-semibold transition-all duration-150 ${
                 metric === m
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-white dark:bg-slate-500 text-violet-700 dark:text-white shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
               {m.toUpperCase()}
@@ -35,33 +45,42 @@ export function ProductsTable({ data, loading, metric, onMetricChange }: Product
       </div>
 
       {loading ? (
-        <p className="text-center text-gray-400 py-8">Loading...</p>
+        <div className="space-y-3 p-6">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-8 bg-slate-100 dark:bg-slate-700 rounded-lg animate-pulse" />
+          ))}
+        </div>
       ) : data.length === 0 ? (
-        <p className="text-center text-gray-400 py-8">No data</p>
+        <p className="text-center text-slate-400 py-12 text-sm">No data for selected range</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-gray-500 border-b">
-                <th className="pb-2 pr-4">#</th>
-                <th className="pb-2 pr-4">Product ID</th>
-                <th className="pb-2 pr-4">Category</th>
-                <th className="pb-2 pr-4 text-right">GMV</th>
-                <th className="pb-2 text-right">Revenue</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((p, i) => (
-                <tr key={p.productId} className="border-b last:border-0 hover:bg-gray-50">
-                  <td className="py-2 pr-4 text-gray-400">{i + 1}</td>
-                  <td className="py-2 pr-4 font-mono text-xs">{p.productId.slice(0, 12)}…</td>
-                  <td className="py-2 pr-4">{p.categoryNameEnglish ?? p.categoryName ?? '—'}</td>
-                  <td className="py-2 pr-4 text-right">{fmtBRL(p.gmv)}</td>
-                  <td className="py-2 text-right font-semibold">{fmtBRL(p.revenue)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="divide-y divide-slate-50 dark:divide-slate-700/50">
+          {data.map((p, i) => {
+            const val = metric === 'gmv' ? p.gmv : p.revenue;
+            const pct = Math.round((val / maxVal) * 100);
+            return (
+              <div key={p.productId} className="flex items-center gap-4 px-6 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors">
+                <span className="text-xs font-bold text-slate-300 dark:text-slate-600 w-5 shrink-0">{i + 1}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="min-w-0">
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate block">
+                        {p.categoryNameEnglish ?? p.categoryName ?? '—'}
+                      </span>
+                      <span className="text-xs font-mono text-slate-400 dark:text-slate-500">
+                        {p.productId.slice(0, 8)}…
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200 ml-4 shrink-0">
+                      {fmtMoney(val, currency, conversionRate)}
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-violet-500 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
