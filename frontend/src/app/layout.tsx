@@ -20,8 +20,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   O
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold tracking-tight leading-none">Olist Analytics</h1>
-                  <p className="text-slate-400 text-xs mt-0.5">Brazilian E-Commerce · 2016–2018</p>
+                  <h1 className="text-lg font-bold tracking-tight leading-none">Análisis de Olist</h1>
+                  <p className="text-slate-400 text-xs mt-0.5">E-Commerce Brasil · 2016–2018</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
